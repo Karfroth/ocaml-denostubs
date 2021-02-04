@@ -1,0 +1,10 @@
+(executable
+ (name mylib)
+ (libraries bindings ctypes lib)
+ (foreign_stubs (language c) (names mylib))
+ (flags :standard -linkall)
+ (modes (native shared_object)))
+
+(install
+ (section lib)
+ (files (mylib.so as libmylib.so) mylib.h))

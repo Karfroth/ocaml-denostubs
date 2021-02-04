@@ -1,0 +1,14 @@
+.merlin
+node_modules/
+_build
+_esy
+_release
+
+# Auto generated files
+*.byte
+*.native
+*.install
+mylib/mylib.c
+mylib/mylib.h
+mylib/mylib_bindings.ml
+a.out
