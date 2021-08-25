@@ -4,6 +4,8 @@ let generate dirname =
   let ml_fd = open_out (path "mylib_bindings.ml") in
   let c_fd = open_out (path "mylib.c") in
   let h_fd = open_out (path "mylib.h") in
+  let ts_fd = open_out (path "mylib.ts") in
+  let deno_fd = open_out (path "deno_init.c") in
   let stubs = (module Bindings.Stub_Bindings.Stubs: Cstubs_inverted.BINDINGS) in
   begin
     (* Generate the ML module that links in the generated C. *)
@@ -18,6 +20,9 @@ let generate dirname =
     (* Generate the C header file that exports OCaml functions. *)
     Cstubs_inverted.write_c_header 
       (Format.formatter_of_out_channel h_fd) ~prefix stubs;
+
+    Bindings.Denostubs.write_ts (Format.formatter_of_out_channel ts_fd) ~prefix stubs;
+    Bindings.Denostubs.write_deno_c (Format.formatter_of_out_channel deno_fd);
 
   end;
   close_out h_fd;

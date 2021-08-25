@@ -1,7 +1,7 @@
 (executable
  (name mylib)
  (libraries bindings ctypes lib)
- (foreign_stubs (language c) (names mylib))
+ (foreign_stubs (language c) (names deno_init mylib))
  (flags :standard -linkall)
  (modes (native shared_object)))
 

@@ -3,6 +3,7 @@ node_modules/
 _build
 _esy
 _release
+example
 
 # Auto generated files
 *.byte
@@ -11,4 +12,6 @@ _release
 mylib/mylib.c
 mylib/mylib.h
 mylib/mylib_bindings.ml
+mylib/mylib.ts
+mylib/deno_init.c
 a.out
