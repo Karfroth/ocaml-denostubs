@@ -102,7 +102,7 @@ let gen_ts fmt register funcs =
   Format.fprintf fmt
     "const dylib = Deno.dlopen(libName, {\n";
   Format.fprintf fmt
-    "'init': { parameters: [], result: 'void' },\n";
+    "  'init': { parameters: [], result: 'void' },\n";
   List.iter (fun (Fn ({fn_name; _}, fn)) ->
     print_endline ("Processing " ^ fn_name);
     let res = asdf fn in
