@@ -1,4 +1,4 @@
 (executable 
  (name Gen)
  (public_name stubgen.exe)
- (libraries bindings lib ctypes ctypes.stubs))
+ (libraries bindings lib ctypes ctypes.stubs denostubs))

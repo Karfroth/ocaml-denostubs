@@ -1,5 +1,5 @@
 {
-  "checksum": "236db96260163c68053d8ea4c8758f85",
+  "checksum": "f2d6438f6f50ccee7a2bca26015eec1b",
   "root": "mylib@link-dev:./package.json",
   "node": {
     "yarn-pkg-config@github:esy-ocaml/yarn-pkg-config#db3a0b63883606dd57c54a7158d560d6cba8cd79@d41d8cd9": {
@@ -43,7 +43,9 @@
       },
       "overrides": [],
       "dependencies": [
-        "ocaml@4.11.2000@d41d8cd9", "@opam/ctypes@opam:0.15.0@7ac74b29"
+        "ocaml@4.11.2000@d41d8cd9",
+        "denostubs@github:Karfroth/ocaml-denostubs#842e889@d41d8cd9",
+        "@opam/ctypes@opam:0.15.0@7ac74b29"
       ],
       "devDependencies": [
         "ocaml@4.11.2000@d41d8cd9",
@@ -53,6 +55,20 @@
         "@opam/lambda-term@opam:3.1.0@ee14e49b",
         "@opam/dune@opam:2.9.0@489e77a9"
       ]
+    },
+    "denostubs@github:Karfroth/ocaml-denostubs#842e889@d41d8cd9": {
+      "id": "denostubs@github:Karfroth/ocaml-denostubs#842e889@d41d8cd9",
+      "name": "denostubs",
+      "version": "github:Karfroth/ocaml-denostubs#842e889",
+      "source": {
+        "type": "install",
+        "source": [ "github:Karfroth/ocaml-denostubs#842e889" ]
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.11.2000@d41d8cd9", "@opam/ctypes@opam:0.15.0@7ac74b29"
+      ],
+      "devDependencies": [ "ocaml@4.11.2000@d41d8cd9" ]
     },
     "@opam/zed@opam:3.1.0@86c55416": {
       "id": "@opam/zed@opam:3.1.0@86c55416",

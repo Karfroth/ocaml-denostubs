@@ -7,6 +7,9 @@ esy dune exec gen/Gen.exe ./mylib
 esy build
 cp _esy/default/build/install/default/lib/mylib/libmylib.so example/mylib.so
 cp mylib/mylib.ts example/mylib.ts
+
+# adding some init code to ts file
+echo "\nconst dylib = loadLib(\`./mylib.so\`);" >> example/mylib.ts
 echo "\nconsole.log('initializing ocaml module');" >> example/mylib.ts
 echo "dylib.symbols.init();" >> example/mylib.ts
 echo "console.log('1 + 3');" >> example/mylib.ts

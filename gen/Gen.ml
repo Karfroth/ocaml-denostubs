@@ -21,8 +21,8 @@ let generate dirname =
     Cstubs_inverted.write_c_header 
       (Format.formatter_of_out_channel h_fd) ~prefix stubs;
 
-    Bindings.Denostubs.write_ts (Format.formatter_of_out_channel ts_fd) ~prefix stubs;
-    Bindings.Denostubs.write_deno_c (Format.formatter_of_out_channel deno_fd);
+    Denostubs.write_ts (Format.formatter_of_out_channel ts_fd) stubs;
+    Denostubs.write_deno_c_stub (Format.formatter_of_out_channel deno_fd);
 
   end;
   close_out h_fd;
