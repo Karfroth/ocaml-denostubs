@@ -3,7 +3,7 @@ name: "denostubs"
 version: "0.1"
 synopsis: "Deno-ffi stubs generator"
 description: """
-denostubs is a package which extends Ctypes package's inverted stubs to populate deno-compatible stubs.
+denostubs is a package which extends Ctype's inverted stubs to populate deno-compatible stubs(ffi).
 """
 maintainer: "Woosang Lee <recollect12@gmail.com>"
 authors: "Woosang Lee <recollect12@gmail.com>"
@@ -13,8 +13,8 @@ bug-reports: ""
 dev-repo: ""
 depends: [ 
   "ocaml"  {>= "4.08.0"}
-  "ctypes" {>= "0.19.1"}
-  "dune"   {>= "2.0.0"}
+  "ctypes" {>= "0.15.0"}
+  "dune"   {>= "2.5.0"}
 ]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
