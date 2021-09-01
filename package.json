@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@opam/ctypes": "0.15.0",
-    "ocaml": "~4.8.0"
+    "ocaml": "^4.8.0"
   },
   "devDependencies": {
     "@opam/merlin": "^3.3.3",
@@ -22,6 +22,6 @@
     "@opam/ocamlfind-secondary": "*",
     "@opam/dune": "*",
     "@opam/lambda-term": "*",
-    "ocaml": "~4.8.0"
+    "ocaml": "^4.8.0"
   }
 }
