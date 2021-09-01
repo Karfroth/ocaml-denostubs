@@ -1,26 +1,4 @@
-type fn_info = Fn : string * (_ -> _) Ctypes.fn -> fn_info
-type ty = Ty : _ Ctypes.typ -> ty
-type typedef = Typedef : _ Ctypes.typ * string -> typedef
-type enum = Enum : (string * int64) list * _ Ctypes.typ -> enum
-
-type decl =
-| Decl_fn of fn_info
-| Decl_ty of ty
-| Decl_typedef of typedef
-| Decl_enum of enum
-
-let collector () : (module Cstubs_inverted.INTERNAL) * (unit -> decl list) =
-  let decls = ref [] in
-  let push d = decls := d :: !decls in
-  let module Internal: Cstubs_inverted.INTERNAL = struct
-    let enum constants typ = push (Decl_enum (Enum (constants, typ)))
-    let structure typ = push (Decl_ty (Ty typ))
-    let union typ = push (Decl_ty (Ty typ))
-    let typedef typ name = push (Decl_typedef (Typedef (typ, name)))
-    let internal ?runtime_lock:_ name fn _ =
-      push (Decl_fn ((Fn (name, fn))))
-  end in
-  (module Internal), (fun () -> List.rev !decls)
+open Denostubs_types
 
 let functions decls =
   List.fold_right(fun v acc ->
@@ -79,21 +57,17 @@ let rec fn_to_deno_typ: type a. a Ctypes.fn -> string option list = function
 
 let gen_ts fmt funcs =
   Format.fprintf fmt
-    "let libSuffix = 'so';\n";
+    "function loadLib(libPath: string) {\n";
   Format.fprintf fmt
-    "if (Deno.build.os == 'windows') {\n  libSuffix = 'dll'\n}\n";
+    "  return Deno.dlopen(libPath, {\n";
   Format.fprintf fmt
-    "const libName = `./mylib.${libSuffix}`;\n";
-  Format.fprintf fmt
-    "const dylib = Deno.dlopen(libName, {\n";
-  Format.fprintf fmt
-    "  'init': { parameters: [], result: 'void' },\n";
+    "    'init': { parameters: [], result: 'void' },\n";
   List.iter (fun (Fn (fn_name, fn)) ->
     print_endline ("Processing " ^ fn_name);
     let res = fn_to_deno_typ fn in
     match List.find_opt Option.is_none res with
     | None ->
-      Format.fprintf fmt "  '%s': " fn_name;
+      Format.fprintf fmt "    '%s': " fn_name;
       Format.fprintf fmt "{ parameters: [";
       let rec aux = function
       | [] ->
@@ -109,7 +83,7 @@ let gen_ts fmt funcs =
       (* List.iter (function Some x -> print_endline x | None -> print_endline "" ) res; *)
   ) funcs;
   Format.fprintf fmt
-    "});\n";
+    "  });\n}";
   ()
 ;;
 

@@ -1,3 +1,4 @@
 (library
  (name denostubs)
+ (public_name denostubs)
  (libraries ctypes))
