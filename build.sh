@@ -2,11 +2,10 @@
 rm -rf example
 mkdir example
 esy install
-esy dune build gen
-esy dune exec gen/Gen.exe ./mylib
 esy build
 cp _esy/default/build/install/default/lib/mylib/libmylib.so example/mylib.so
-cp mylib/mylib.ts example/mylib.ts
+cp _esy/default/build/install/default/lib/mylib/mylib.ts example/mylib.ts
+chmod +rw example/mylib.ts
 
 # adding some init code to ts file
 echo "\nconst dylib = loadLib(\`./mylib.so\`);" >> example/mylib.ts

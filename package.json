@@ -4,17 +4,7 @@
   "description": "OCaml workflow with Esy",
   "license": "MIT",
   "esy": {
-    "build": "dune build -p #{self.name}",
-    "release": {
-      "bin": "hello",
-      "includePackages": [
-        "root",
-        "@opam/camomile"
-      ]
-    }
-  },
-  "scripts": {
-    "test": "esy x hello"
+    "build": "dune build -p #{self.name}"
   },
   "dependencies": {
     "denostubs": "0.1.0",

@@ -7,4 +7,9 @@
 
 (install
  (section lib)
- (files (mylib.so as libmylib.so) mylib.h))
+ (files (mylib.so as libmylib.so) mylib.h mylib.ts))
+
+(rule
+ (targets deno_init.c mylib.c mylib.h mylib_bindings.ml mylib.ts)
+ (deps ../gen/Gen.exe)
+ (action (run %{deps} ./)))
