@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "denostubs"
-version: "0.1"
+version: "0.0.1"
 synopsis: "Deno-ffi stubs generator"
 description: """
 denostubs is a package which extends Ctype's inverted stubs to populate deno-compatible stubs(ffi).

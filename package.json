@@ -1,6 +1,6 @@
 {
   "name": "denostubs",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Deno-ffi stubs generator",
   "license": "MIT",
   "esy": {
