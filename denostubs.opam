@@ -12,7 +12,7 @@ homepage: ""
 bug-reports: ""
 dev-repo: ""
 depends: [ 
-  "ocaml"  {>= "4.08.0"}
+  "ocaml"  {>= "4.13.1"}
   "ctypes" {>= "0.15.0"}
   "dune"   {>= "2.5.0"}
 ]
