@@ -4,6 +4,7 @@ _build
 _esy
 _release
 example
+_opam
 
 # Auto generated files
 *.byte
