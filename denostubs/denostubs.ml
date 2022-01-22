@@ -9,34 +9,30 @@ let functions decls =
 
 let prim_to_deno_typ (type a) (p: a Ctypes_primitive_types.prim) =
   match p with
-  | Int8_t -> Some "i8"
-  | Int16_t -> Some "i16"
-  | Int32_t -> Some "i32"
-  | Int64_t -> Some "i64"
-  | Uint8_t -> Some "u8"
-  | Uint16_t -> Some "u16"
-  | Uint32_t -> Some "u32"
-  | Uint64_t -> Some "u64"
-  | Int -> Some "i32"
-  | Long -> Some "i64"
+  | Char | Schar -> Some "i8"
+  | Uchar -> Some "u8"
+  | Short -> Some "i16"
+  | Ushort -> Some "u16"
+  | Int | Sint -> Some "i32"
   | Uint -> Some "u32"
-  | Ulong -> Some "u64"
+  | Long | Llong -> Some "i64"
+  | Ulong | Ullong -> Some "u64"
   | Size_t -> Some "isize"
   | Float -> Some "f32"
   | Double -> Some "f64"
+  | Nativeint -> Some "pointer"
   | _ -> None
   (* Hope someday supports all *)
   (* 
-    Char
-    Schar
-    Uchar
+    Int8_t -> Some "i8"
+    Int16_t -> Some "i16"
+    Int32_t -> Some "i32"
+    Int64_t -> Some "i64"
+    Uint8_t -> Some "u8"
+    Uint16_t -> Some "u16"
+    Uint32_t -> Some "u32"
+    Uint64_t -> Some "u64"
     Bool
-    Short
-    Llong
-    Ushort
-    Sint
-    Ullong
-    Size_t
     Camlint
     Nativeint
     LDouble
