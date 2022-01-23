@@ -34,7 +34,6 @@ let prim_to_deno_typ (type a) (p: a Ctypes_primitive_types.prim) =
     Uint64_t -> Some "u64"
     Bool
     Camlint
-    Nativeint
     LDouble
     Complex32
     Complex64
@@ -45,6 +44,7 @@ let static_typ_to_deno_typ (type a) (t: a Ctypes.typ) =
   match t with
   | Ctypes_static.Void -> Some "void"
   | Ctypes_static.Primitive p -> prim_to_deno_typ p
+  | Ctypes_static.Pointer _ -> Some "pointer"
   | _ -> print_endline "Only primitive and void types are supported"; None
 
 let rec fn_to_deno_typ: type a. a Ctypes.fn -> string option list = function
