@@ -31,19 +31,16 @@ type decl =
 | Decl_typedef of typedef
 | Decl_enum of enum
 
-let collector () : (module Denostubs_inverted.INTERNAL) * (unit -> decl list) =
+let collector () : (module Cstubs_inverted.INTERNAL) * (unit -> decl list) =
   let decls = ref [] in
   let push d = decls := d :: !decls in
 
-  let promise_fns = ref [] in
-  let push_promise_fns n = promise_fns := n :: !promise_fns in
-  let module Internal: Denostubs_inverted.INTERNAL = struct
+  let module Internal: Cstubs_inverted.INTERNAL = struct
     let enum constants typ = push (Decl_enum (Enum (constants, typ)))
     let structure typ = push (Decl_ty (Ty typ))
     let union typ = push (Decl_ty (Ty typ))
     let typedef typ name = push (Decl_typedef (Typedef (typ, name)))
     let internal ?runtime_lock:_ name fn _ =
       push (Decl_fn ((Fn (name, fn))))
-    let promise_fn name = push_promise_fns name
   end in
   (module Internal), (fun () -> List.rev !decls)
