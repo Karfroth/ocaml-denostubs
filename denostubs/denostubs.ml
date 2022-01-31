@@ -61,7 +61,7 @@ module Export = struct
       "  return Deno.dlopen(libPath, {\n";
     Format.fprintf fmt
       "    'init': { parameters: [], result: 'void' },\n";
-    List.iter (fun (Fn (fn_name, _, fn)) ->
+    List.iter (fun (Fn (fn_name, promisify, fn)) ->
       print_endline ("Processing " ^ fn_name);
       let res = fn_to_deno_typ fn in
       match List.find_opt Option.is_none res with
@@ -72,7 +72,9 @@ module Export = struct
         | [] ->
           (Format.fprintf fmt "}") |> ignore;
         | t :: [] ->
-          Option.iter (Format.fprintf fmt "], result: '%s' },\n") t 
+          t
+          |> Option.map(fun x -> (x, promisify))
+          |> Option.iter (fun (r, p) -> Format.fprintf fmt "], result: '%s', nonblocking: %b },\n" r p)
         | h :: t ->
           Option.iter (Format.fprintf fmt "'%s', ") h;
           aux t
