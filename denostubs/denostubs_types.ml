@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 *)
 
-type fn_info = Fn : string * (_ -> _) Ctypes.fn -> fn_info
+type fn_info = Fn : string * bool * (_ -> _) Ctypes.fn -> fn_info
 type ty = Ty : _ Ctypes.typ -> ty
 type typedef = Typedef : _ Ctypes.typ * string -> typedef
 type enum = Enum : (string * int64) list * _ Ctypes.typ -> enum
@@ -31,16 +31,16 @@ type decl =
 | Decl_typedef of typedef
 | Decl_enum of enum
 
-let collector () : (module Cstubs_inverted.INTERNAL) * (unit -> decl list) =
+let collector () : (module Denostubs_inverted.DENOSTUBS_INTERNAL) * (unit -> decl list) =
   let decls = ref [] in
   let push d = decls := d :: !decls in
 
-  let module Internal: Cstubs_inverted.INTERNAL = struct
+  let module Internal: Denostubs_inverted.DENOSTUBS_INTERNAL = struct
     let enum constants typ = push (Decl_enum (Enum (constants, typ)))
     let structure typ = push (Decl_ty (Ty typ))
     let union typ = push (Decl_ty (Ty typ))
     let typedef typ name = push (Decl_typedef (Typedef (typ, name)))
-    let internal ?runtime_lock:_ name fn _ =
-      push (Decl_fn ((Fn (name, fn))))
+    let internal ?(promisify=false) ?runtime_lock:_ name fn _ =
+      push (Decl_fn ((Fn (name, promisify, fn))))
   end in
   (module Internal), (fun () -> List.rev !decls)

@@ -61,7 +61,7 @@ module Export = struct
       "  return Deno.dlopen(libPath, {\n";
     Format.fprintf fmt
       "    'init': { parameters: [], result: 'void' },\n";
-    List.iter (fun (Fn (fn_name, fn)) ->
+    List.iter (fun (Fn (fn_name, _, fn)) ->
       print_endline ("Processing " ^ fn_name);
       let res = fn_to_deno_typ fn in
       match List.find_opt Option.is_none res with
@@ -86,7 +86,7 @@ module Export = struct
     ()
   ;;
 
-  let write_ts fmt (module B: Cstubs_inverted.BINDINGS) =
+  let write_ts fmt (module B: Denostubs_inverted.DENOSTUBS_BINDINGS) =
     let m, decls = collector () in
     let module M = B((val m)) in
     gen_ts fmt (functions (decls ()))
