@@ -6,22 +6,23 @@ let generate dirname =
   let h_fd = open_out (path "mylib.h") in
   let ts_fd = open_out (path "mylib.ts") in
   let deno_fd = open_out (path "deno_init.c") in
-  let stubs = (module Bindings.Stub_Bindings.Stubs: Cstubs_inverted.BINDINGS) in
+  let module Cstubs_bindings = Bindings.Stub_Bindings.Binding_Gen.CStubs_bindings in
+  let module Denostubs_bindings = Bindings.Stub_Bindings.Binding_Gen.Denostubs_bindings in
   begin
     (* Generate the ML module that links in the generated C. *)
     Cstubs_inverted.write_ml 
-      (Format.formatter_of_out_channel ml_fd) ~prefix stubs;
+      (Format.formatter_of_out_channel ml_fd) ~prefix (module Cstubs_bindings);
 
     (* Generate the C source file that exports OCaml functions. *)
     Format.fprintf (Format.formatter_of_out_channel c_fd)
       "#include \"mylib.h\"@\n%a"
-      (Cstubs_inverted.write_c ~prefix) stubs;
+      (Cstubs_inverted.write_c ~prefix) (module Cstubs_bindings);
 
     (* Generate the C header file that exports OCaml functions. *)
     Cstubs_inverted.write_c_header 
-      (Format.formatter_of_out_channel h_fd) ~prefix stubs;
+      (Format.formatter_of_out_channel h_fd) ~prefix (module Cstubs_bindings);
 
-    Denostubs.write_ts (Format.formatter_of_out_channel ts_fd) stubs;
+    Denostubs.write_ts (Format.formatter_of_out_channel ts_fd) (module Denostubs_bindings);
     Denostubs.write_deno_c_stub (Format.formatter_of_out_channel deno_fd);
 
   end;

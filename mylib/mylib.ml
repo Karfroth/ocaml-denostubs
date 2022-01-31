@@ -1,1 +1,1 @@
-include Bindings.Stub_Bindings.Stubs(Mylib_bindings)
+include Bindings.Stub_Bindings.Binding_Gen.CStubs_bindings(Mylib_bindings)
