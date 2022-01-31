@@ -26,7 +26,7 @@ module Definitions: Denostubs_inverted.DEFINITIONS = struct
       fn_typ = ((ptr void) @-> returning(ptr void));
       fn = Lib.Util.do_nativeint_string;
       runtime_lock = false;
-      promisify = false;
+      promisify = true;
     };
   ]
 end
