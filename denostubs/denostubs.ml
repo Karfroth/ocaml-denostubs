@@ -47,7 +47,21 @@ module Export = struct
   | Returns t -> [static_typ_to_deno_typ t]
   | Function (l, r) -> (static_typ_to_deno_typ l) :: (fn_to_deno_typ r)
 
-  let gen_ts fmt funcs =
+  let process_structure fmt = function
+  | Structure (Struct { tag; spec; fields }) ->
+    Format.fprintf fmt "interface %s {" tag;
+    spec |> ignore;
+    fields |> ignore;
+    Format.fprintf fmt "};"
+  | Structure (Ctypes_static.Primitive _) -> print_endline "Primitive not supported for structure"
+  | Structure (Ctypes_static.View _) -> print_endline "View not supported for structure"
+  | Structure (Ctypes_static.Bigarray _) -> print_endline "Bigarray not supported for structure"
+
+  let gen_structures fmt structures =
+    structures |> List.iter (fun s -> process_structure fmt s) |> ignore;
+  ;;
+
+  let gen_fns fmt funcs =
     Format.fprintf fmt
       "function loadLib(libPath: string) {\n";
     Format.fprintf fmt
@@ -79,10 +93,10 @@ module Export = struct
     Format.fprintf fmt
       "  });\n}";
     ()
-  ;;
 
   let write_ts fmt (module D: Denostubs_inverted.DEFINITIONS) =
-    gen_ts fmt D.functions
+    gen_structures fmt D.structures;
+    gen_fns fmt D.functions
 
   let write_deno_c_stub fmt =
     Format.fprintf fmt
