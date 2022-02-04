@@ -3,13 +3,6 @@ open Denostubs_types
 module Denostubs_inverted = Denostubs_inverted
 
 module Export = struct
-  let functions decls =
-    List.fold_right(fun v acc ->
-      match v with
-      | Decl_fn fn -> fn :: acc
-      | _ -> acc
-    ) decls []
-
   let prim_to_deno_typ (type a) (p: a Ctypes_primitive_types.prim) =
     match p with
     | Char | Schar -> Some "i8"
@@ -61,12 +54,12 @@ module Export = struct
       "  return Deno.dlopen(libPath, {\n";
     Format.fprintf fmt
       "    'init': { parameters: [], result: 'void' },\n";
-    List.iter (fun (Fn (fn_name, promisify, fn)) ->
-      print_endline ("Processing " ^ fn_name);
-      let res = fn_to_deno_typ fn in
+    List.iter (fun (Func {name; fn_typ; promisify; _}) ->
+      print_endline ("Processing " ^ name);
+      let res = fn_to_deno_typ fn_typ in
       match List.find_opt Option.is_none res with
       | None ->
-        Format.fprintf fmt "    '%s': " fn_name;
+        Format.fprintf fmt "    '%s': " name;
         Format.fprintf fmt "{ parameters: [";
         let rec aux = function
         | [] ->
@@ -80,7 +73,7 @@ module Export = struct
           aux t
         in
         aux res;
-      | _ -> print_endline ("Stub for " ^ fn_name ^ " is not generated because it includes unsupported type(s)");
+      | _ -> print_endline ("Stub for " ^ name ^ " is not generated because it includes unsupported type(s)");
         (* List.iter (function Some x -> print_endline x | None -> print_endline "" ) res; *)
     ) funcs;
     Format.fprintf fmt
@@ -88,10 +81,8 @@ module Export = struct
     ()
   ;;
 
-  let write_ts fmt (module B: Denostubs_inverted.DENOSTUBS_BINDINGS) =
-    let m, decls = collector () in
-    let module M = B((val m)) in
-    gen_ts fmt (functions (decls ()))
+  let write_ts fmt (module D: Denostubs_inverted.DEFINITIONS) =
+    gen_ts fmt D.functions
 
   let write_deno_c_stub fmt =
     Format.fprintf fmt
