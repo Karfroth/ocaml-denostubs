@@ -48,11 +48,8 @@ module Export = struct
   | Function (l, r) -> (static_typ_to_deno_typ l) :: (fn_to_deno_typ r)
 
   let process_structure fmt = function
-  | Structure (Struct { tag; spec; fields }) ->
-    Format.fprintf fmt "interface %s {" tag;
-    spec |> ignore;
-    fields |> ignore;
-    Format.fprintf fmt "};"
+  | Structure (Struct { tag; _ }) ->
+    Format.fprintf fmt "type %s = Deno.UnsafePointer & { _ocamlFFI: %s } " tag tag;
   | Structure (Ctypes_static.Primitive _) -> print_endline "Primitive not supported for structure"
   | Structure (Ctypes_static.View _) -> print_endline "View not supported for structure"
   | Structure (Ctypes_static.Bigarray _) -> print_endline "Bigarray not supported for structure"
@@ -61,42 +58,49 @@ module Export = struct
     structures |> List.iter (fun s -> process_structure fmt s) |> ignore;
   ;;
 
-  let gen_fns fmt funcs =
+  let gen_fn_imports fmt funcs =
     Format.fprintf fmt
       "function loadLib(libPath: string) {\n";
     Format.fprintf fmt
       "  return Deno.dlopen(libPath, {\n";
     Format.fprintf fmt
       "    'init': { parameters: [], result: 'void' },\n";
-    List.iter (fun (Func {name; fn_typ; promisify; _}) ->
+    let fns_deno_typs = List.map (fun (Func { fn_typ; name=fn_name; promisify; _ }) ->
+      let fn_deno_typ = fn_typ
+      |> fn_to_deno_typ in
+      (fn_name, promisify, fn_deno_typ)
+    ) funcs in
+    let (valid_fns, invalid_fns) = List.partition (fun (_, _, fn_deno_typ) -> 
+      Option.bind (List.find_opt (Option.is_none) fn_deno_typ) (fun x -> x)
+      |> Option.is_some
+    ) fns_deno_typs in
+    List.iter (fun (name, _, _) ->
+      print_endline ("Stub for " ^ name ^ " is not generated because it includes unsupported type(s)");
+    ) invalid_fns;
+    List.iter (fun (name, promisify, fn_deno_typ) ->
       print_endline ("Processing " ^ name);
-      let res = fn_to_deno_typ fn_typ in
-      match List.find_opt Option.is_none res with
-      | None ->
-        Format.fprintf fmt "    '%s': " name;
-        Format.fprintf fmt "{ parameters: [";
-        let rec aux = function
-        | [] ->
-          (Format.fprintf fmt "}") |> ignore;
-        | t :: [] ->
-          t
-          |> Option.map(fun x -> (x, promisify))
-          |> Option.iter (fun (r, p) -> Format.fprintf fmt "], result: '%s', nonblocking: %b },\n" r p)
-        | h :: t ->
-          Option.iter (Format.fprintf fmt "'%s', ") h;
-          aux t
-        in
-        aux res;
-      | _ -> print_endline ("Stub for " ^ name ^ " is not generated because it includes unsupported type(s)");
-        (* List.iter (function Some x -> print_endline x | None -> print_endline "" ) res; *)
-    ) funcs;
+      Format.fprintf fmt "    '%s': " name;
+      Format.fprintf fmt "{ parameters: [";
+      let rec aux = function
+      | [] ->
+        (Format.fprintf fmt "}") |> ignore;
+      | t :: [] ->
+        t
+        |> Option.map(fun x -> (x, promisify))
+        |> Option.iter (fun (r, p) -> Format.fprintf fmt "], result: '%s', nonblocking: %b },\n" r p)
+      | h :: t ->
+        Option.iter (Format.fprintf fmt "'%s', ") h;
+        aux t
+      in
+      aux fn_deno_typ;
+    ) valid_fns;
     Format.fprintf fmt
       "  });\n}";
     ()
 
   let write_ts fmt (module D: Denostubs_inverted.DEFINITIONS) =
     gen_structures fmt D.structures;
-    gen_fns fmt D.functions
+    gen_fn_imports fmt D.functions
 
   let write_deno_c_stub fmt =
     Format.fprintf fmt
@@ -108,7 +112,7 @@ module Export = struct
     Format.fprintf fmt
       "  caml_startup(&argv);\n";
     Format.fprintf fmt
-      "}\n";;
+      "}\n"
 end
 
 include Export
